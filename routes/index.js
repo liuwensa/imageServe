@@ -28,5 +28,8 @@ router.get('/images/:firstFile/:secondFile/:filename', acquireImage.acquireImage
 // 百度编辑器远程下载
 router.post('/ueditor/download/image', download.ueditorDownloadImage);
 
+// 下载并替换html详情中的图片
+router.post('/replace/content', download.replaceContent);
+
 // 百度编辑器上传图片
 router.post('/ueditor/upload/image', multerUtil.ueditorUploadFiles);
