@@ -4,22 +4,24 @@
 
 'use strict';
 
-const fs        = require('fs-extra');
-const path      = require('path');
-const gm        = require('gm');
+const fs = require('fs-extra');
+const path = require('path');
+const gm = require('gm');
 const imageSize = require('image-size');
+const Captchapng = require('captchapng');
 
 const thumbnailDir = config.thumbnailDir;
-const uploadDir    = config.uploadDir;
-const picSizes     = config.picSizes;
+const uploadDir = config.uploadDir;
+const picSizes = config.picSizes;
 
-const imgReg  = /(?:(\d{2,4})x(\d{2,4})\.(?:jpg|png|gif|ico|bmp))$/;
+const imgReg = /(?:(\d{2,4})x(\d{2,4})\.(?:jpg|png|gif|ico|bmp))$/;
 const formats = ['png', 'gif', 'bmp', 'webp'];
 
 Promise.promisifyAll(gm.prototype);
 
 module.exports = {
-  acquireImage: acquireImage
+  acquireImage: acquireImage,
+  acquireCheckCode: acquireCheckCode
 };
 
 /**
@@ -29,10 +31,10 @@ module.exports = {
  * @returns {*}
  */
 function acquireImage(req, res) {
-  const firstFile  = req.params.firstFile;
+  const firstFile = req.params.firstFile;
   const secondFile = req.params.secondFile;
-  const filename   = req.params.filename;
-  const format     = req.query.format || '';
+  const filename = req.params.filename;
+  const format = req.query.format || '';
 
   let filePathName = path.join(uploadDir, firstFile, secondFile, filename);
 
@@ -49,8 +51,8 @@ function acquireImage(req, res) {
     }
   }
 
-  const x    = strMatch[1];
-  const y    = strMatch[2];
+  const x = strMatch[1];
+  const y = strMatch[2];
   const side = x + 'x' + y;
 
   let thumbnailPath = filePathName.replace('images', 'thumbnails');
@@ -64,9 +66,9 @@ function acquireImage(req, res) {
   let postfix = '_' + side + '.jpg';
 
   if (format && utils.validator.isIn(format, formats)) {
-    postfix       = '_' + side + '.' + format;
+    postfix = '_' + side + '.' + format;
     thumbnailPath = thumbnailPath.replace('_' + side + '.jpg', postfix);
-    filePathName  = filePathName.replace('_' + side + '.jpg', postfix);
+    filePathName = filePathName.replace('_' + side + '.jpg', postfix);
   }
 
   // eslint-disable-next-line
@@ -74,7 +76,7 @@ function acquireImage(req, res) {
     return sendFile(thumbnailPath);
   }
 
-  let originUrl       = '';
+  let originUrl = '';
   const fileOriginUrl = filePathName.replace(postfix, '');
 
   // eslint-disable-next-line
@@ -91,8 +93,8 @@ function acquireImage(req, res) {
     .then((image) => {
       const wOri = image.width;
       const hOri = image.height;
-      let w      = wOri;
-      let h      = hOri;
+      let w = wOri;
+      let h = hOri;
       if (wOri >= hOri && hOri > x) {
         w = parseInt(x * wOri / hOri);
         h = x;
@@ -144,4 +146,31 @@ function acquireImage(req, res) {
       });
     });
   }
+}
+
+/**
+ * 获取数字验证码
+ * @param {object} req
+ * @param {object} res
+ * @returns {*}
+ */
+function acquireCheckCode(req, res) {
+  const width = +req.query.width || 100;
+  const height = +req.query.width || 30;
+
+  const code = parseInt((Math.random() * 9000) + 1000);
+
+  // 记录验证码，用于后续验证
+  // req.session.checkcode = code;
+
+  const p = new Captchapng(width, height, code);
+  p.color(0, 0, 0, 0);
+  p.color(80, 80, 80, 255);
+
+  const img = p.getBase64();
+  const imgbase64 = new Buffer(img, 'base64');
+  res.writeHead(200, {
+    'Content-Type': 'image/png'
+  });
+  res.end(imgbase64);
 }

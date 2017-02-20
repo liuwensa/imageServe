@@ -33,3 +33,6 @@ router.post('/replace/content', download.replaceContent);
 
 // 百度编辑器上传图片
 router.post('/ueditor/upload/image', multerUtil.ueditorUploadFiles);
+
+// 获取数字验证码
+router.get('/checkcode', acquireImage.acquireCheckCode);
