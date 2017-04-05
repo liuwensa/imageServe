@@ -4,15 +4,13 @@
 
 'use strict';
 
-require('./global-variable');
+require('./globals');
 
 const express      = require('express');
-const path         = require('path');
 const log4js       = require('log4js');
 const favicon      = require('serve-favicon');
 const cookieParser = require('cookie-parser');
 const bodyParser   = require('body-parser');
-const fs           = require('fs-extra');
 
 /* eslint-disable */
 fs.mkdirsSync(config.uploadDir);

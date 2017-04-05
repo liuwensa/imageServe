@@ -4,8 +4,6 @@
 
 'use strict';
 
-const path = require('path');
-
 const packages = require('../package.json');
 
 const filePath = 'E:\\raid\\imageServe';

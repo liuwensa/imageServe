@@ -4,48 +4,57 @@
 
 'use strict';
 
-const fs      = require('fs-extra');
-const path    = require('path');
-const gm      = require('gm');
-const request = require('request');
-const cheerio = require('cheerio');
+const cheerio        = require('cheerio');
+const Download       = require('download');
+const downloadStatus = require('download-status');
 
-const imageUrl  = config.imageUrl;
-const uploadDir = config.uploadDir;
+const image = require('../services/image');
+
 const tmpDir    = config.tmpDir;
 
-Promise.promisifyAll(gm.prototype);
 
 module.exports = {
-  downloadImage       : downloadImage,
   replaceContent      : replaceContent,
-  ueditorDownloadImage: ueditorDownloadImage
+  ueditorDownloadImage: ueditorDownloadImage,
+  downloadImages      : downloadImages
 };
 
-const reqHeaders = {
-  'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.89 Safari/537.36'
-};
 
 /**
- * downloadImage
+ * downloadImages
  * @param {object} req
  * @param {object} res
  * @returns {*}
  */
-function downloadImage(req, res) {
-  const sourceUrl = req.query.url;
+function downloadImages(req, res) {
+  let urls = req.query.urls;
 
-  if (!sourceUrl) {
-    return res.json({code: 1, msg: '下载的资源链接不能为空！'});
+  try {
+    urls = JSON.parse(urls);
+  } catch (err) {
+    // logger.error('下载图片链接解析出错: ', err);
   }
 
-  return downSources(sourceUrl)
-    .then((fileUrl) => {
-      return res.json({code: 0, msg: {fileUrl: fileUrl}});
-    })
+  if (!Array.isArray(urls)) {
+    urls = [urls];
+  }
+
+  return downloadResult(urls)
+    .then((imageInfos) => res.json({code: 0, msg: imageInfos}))
     .catch((err) => {
+      logger.error(err);
       return res.json({code: 1, msg: err});
     });
+}
+
+/**
+ * 返回图片的全部信息
+ * @param {Array} urls
+ * @returns {Promise.<TResult>}
+ */
+function downloadResult(urls) {
+  return downFiles(urls)
+    .then((files) => image.handleImages(files));
 }
 
 /**
@@ -56,25 +65,16 @@ function downloadImage(req, res) {
  */
 function ueditorDownloadImage(req, res) {
   let imgs    = req.body['source[]'] || req.body.source || [];
-  const paths = [];
 
   if (!Array.isArray(imgs)) {
     imgs = [imgs];
   }
 
-  return Promise.each(imgs, (img) => {
-    return downSources(img)
-      .then((fileUrl) => {
-        paths.push(fileUrl);
-      })
-      .catch(() => {
-        return null;
-      });
-  })
-    .then(() => {
+  return downloadResult(imgs)
+    .then((imageInfos) => {
       const list = [];
-      for (let i = 0, len = paths.length; i < len; ++i) {
-        list.push({url: imageUrl + paths[i], source: imgs[i], state: 'SUCCESS'});
+      for (let i = 0, len = imageInfos.length; i < len; i++) {
+        list.push({url: `${imageInfos[i].imageUrl}${imageInfos[i].url}`, source: imageInfos[i].originUrl, state: 'SUCCESS'});
       }
       return res.json({state: 'SUCCESS', list: list});
     })
@@ -98,75 +98,14 @@ function replaceContent(req, res) {
 
   const imgs = parseImgs(content);
 
-  return Promise.each(imgs, (img) => {
-    return downSources(img)
-      .then((result) => {
-        if (result) {
-          const imgUrl = imageUrl + result;
-          content      = content.replace(img, imgUrl);
-          return null;
-        } else {
-          return null;
-        }
-      })
-      .catch(() => {
-        return null;
-      });
-  })
-    .then(() => res.json({code: 0, msg: content}));
-}
-
-/**
- * downSources
- * @param {String} sourceUrl
- * @returns {*}
- */
-function downSources(sourceUrl) {
-  const filename = utils.myuuid();
-
-  const savePath = path.join(tmpDir, filename);
-
-  const stream = fs.createWriteStream(savePath);
-
-  return new Promise(function (resolve, reject) {
-    request.get({
-      url    : sourceUrl,
-      headers: reqHeaders
-    }, function (err) {
-      if (err) {
-        return reject('下载图片失败！');
-      } else {
-        return resolve(filename);
-      }
-    }).pipe(stream);
-  })
-    .then(() => {
-      return new Promise(function (resolve, reject) {
-        stream.on('close', () => {
-          return resolve();
-        });
-        stream.on('error', () => {
-          return reject('文件下载出错');
-        });
-      });
-    })
-    .then(() => {
-      return gm(savePath).identifyAsync()
-        .then((imgInfo) => {
-          const format     = imgInfo.format.toLowerCase();
-          const firstFile  = filename.substring(0, 2);
-          const secondFile = filename.substring(2, 4);
-
-          const filePath = `/${firstFile}/${secondFile}/${filename}.${format}`;
-
-          const newPath = path.join(uploadDir, filePath);
-          /* eslint-disable */
-          fs.mkdirsSync(path.dirname(newPath));
-          fs.renameSync(savePath, newPath);
-          /* eslint-enable */
-          return `/images${filePath}`;
-        });
+  return downloadResult(imgs).then((imageinfos) => {
+    imageinfos.map((imageInfo) => {
+      const imgUrl =  `${imageInfo.imageUrl}${imageInfo.url}`;
+      content      = content.replace(imageInfo.originUrl, imgUrl);
+      return null;
     });
+    return res.json({code: 0, msg: content});
+  });
 }
 
 /**
@@ -187,4 +126,33 @@ function parseImgs(content) {
   });
 
   return imgs;
+}
+
+/**
+ * 下载图片到临时目录
+ * @param {Array} urls
+ * @returns {*}
+ */
+function downFiles(urls) {
+  const imageInfos = [];
+  return Promise.each(urls, (url) => {
+    url            = decodeURIComponent(url);
+    const fileName = utils.myuuid();
+    return new Promise((resolve, reject) => {
+      const downloader = new Download({extract: true, strip: 1});
+      downloader
+        .get(url)
+        .rename(fileName)
+        .dest(tmpDir)
+        .use(downloadStatus)
+        .run((err) => {
+          if (err) {
+            return reject(err);
+          }
+          const fullPath = path.join(tmpDir, fileName);
+          imageInfos.push({originUrl: url, name: fileName, path: fullPath});
+          return resolve();
+        });
+    });
+  }).return(imageInfos);
 }

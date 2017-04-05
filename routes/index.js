@@ -20,7 +20,7 @@ router.get('/', function (req, res) {
 router.post('/upload/image', multerUtil.uploadFiles);
 
 // 远程下载图片
-router.get('/download/image', download.downloadImage);
+router.get('/download/images', download.downloadImages);
 
 // 获取图片
 router.get('/images/:firstFile/:secondFile/:filename', acquireImage.acquireImage);

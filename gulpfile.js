@@ -8,7 +8,7 @@ const gulp   = require('gulp');
 const eslint = require('gulp-eslint');
 
 gulp.task('lint', () => {
-  return gulp.src('controller/acquireImage.js')
+  return gulp.src('**/**/*.js')
     .pipe(eslint())
     .pipe(eslint.format());
 });

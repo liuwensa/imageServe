@@ -4,11 +4,10 @@
 
 'use strict';
 
-const path = require('path');
-const fs   = require('fs-extra');
+const logConfig = config.log;
 
 // eslint-disable-next-line
-fs.mkdirsSync(path.join(config.log.dir, 'main'));
+fs.mkdirsSync(path.join(logConfig.dir, 'main'));
 
 module.exports = {
   level         : 'AUTO',
@@ -20,7 +19,7 @@ module.exports = {
     {
       category            : 'main',
       type                : 'dateFile',
-      filename            : path.join(config.log.dir, '/main/log'),
+      filename            : path.join(logConfig.dir, '/main/log'),
       pattern             : 'yyyyMMdd',
       alwaysIncludePattern: true,
       maxLogSize          : 1024 * 1024 * 30
@@ -31,7 +30,7 @@ module.exports = {
       level   : 'WARN',
       appender: {
         type      : 'file',
-        filename  : path.join(config.log.dir, 'main.WARN'),
+        filename  : path.join(logConfig.dir, 'main.WARN'),
         maxLogSize: 1024 * 1024 * 30
       }
     },
@@ -41,7 +40,7 @@ module.exports = {
       level   : 'ERROR',
       appender: {
         type      : 'file',
-        filename  : path.join(config.log.dir, 'main.ERROR'),
+        filename  : path.join(logConfig.dir, 'main.ERROR'),
         maxLogSize: 1024 * 1024 * 30
       }
     }
