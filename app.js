@@ -12,6 +12,7 @@ const favicon      = require('serve-favicon');
 const cookieParser = require('cookie-parser');
 const bodyParser   = require('body-parser');
 
+
 /* eslint-disable */
 fs.mkdirsSync(config.uploadDir);
 fs.mkdirsSync(config.thumbnailDir);
@@ -23,8 +24,8 @@ const app = express();
 
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, '/public/favicon.ico')));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json({limit: '80mb'}));
+app.use(bodyParser.urlencoded({limit: '80mb', extended: false}));
 app.use(cookieParser());
 
 app.use(log4js.connectLogger(logger, config.log));

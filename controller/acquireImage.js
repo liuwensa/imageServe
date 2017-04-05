@@ -11,7 +11,7 @@ const thumbnailDir = config.thumbnailDir;
 const uploadDir    = config.uploadDir;
 const picSizes     = config.picSizes;
 
-const imgReg  = /(?:(\d{2,4})x(\d{2,4})\.(?:jpg|png|gif|ico|bmp))$/;
+const imgReg  = /(?:[_.](\d{2,4})x(\d{2,4})\.(?:jpg|png|gif|ico|bmp))$/;
 const formats = ['png', 'gif', 'bmp', 'webp'];
 
 

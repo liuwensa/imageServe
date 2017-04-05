@@ -6,9 +6,12 @@
 
 const express = require('express');
 
-const multerUtil   = require('../controller/multerUtil');
+const upload       = require('../controller/upload');
 const acquireImage = require('../controller/acquireImage');
 const download     = require('../controller/download');
+
+const multerUtil   = require('../middlewares/multerUtil');
+const base64   = require('../middlewares/base64');
 
 const router = module.exports = express.Router();
 
@@ -17,7 +20,9 @@ router.get('/', function (req, res) {
 });
 
 // 上传图片
-router.post('/upload/image', multerUtil.uploadFiles);
+router.post('/upload/images', multerUtil.uploadFiles, upload.uploadFiles);
+
+router.post('/upload/images/base64', base64.base64Decode, upload.uploadImageBase64);
 
 // 远程下载图片
 router.get('/download/images', download.downloadImages);
@@ -32,7 +37,7 @@ router.post('/ueditor/download/image', download.ueditorDownloadImage);
 router.post('/replace/content', download.replaceContent);
 
 // 百度编辑器上传图片
-router.post('/ueditor/upload/image', multerUtil.ueditorUploadFiles);
+router.post('/ueditor/upload/image', multerUtil.uploadFiles, upload.ueditorUploadFiles);
 
 // 获取数字验证码
 router.get('/checkcode', acquireImage.acquireCheckCode);
