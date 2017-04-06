@@ -8,7 +8,6 @@ require('./globals');
 
 const express      = require('express');
 const log4js       = require('log4js');
-const favicon      = require('serve-favicon');
 const cookieParser = require('cookie-parser');
 const bodyParser   = require('body-parser');
 
@@ -22,8 +21,6 @@ const routes = require('./routes');
 
 const app = express();
 
-// uncomment after placing your favicon in /public
-app.use(favicon(path.join(__dirname, '/public/favicon.ico')));
 app.use(bodyParser.json({limit: '80mb'}));
 app.use(bodyParser.urlencoded({limit: '80mb', extended: false}));
 app.use(cookieParser());

@@ -26,6 +26,7 @@ module.exports = {
   },
   picSizes    : [
     '60x60',
+    '120x120',
     '240x240',
     '480x480'
   ]

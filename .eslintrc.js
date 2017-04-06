@@ -185,20 +185,20 @@ module.exports = {
     // 使用`isNaN`方法，而不是使用比较操作符和`NaN`进行比较
     "use-isnan": 2,
 
-    // 使用有效的JSDoc注释
-    "valid-jsdoc": [
-      "warn",
-      {
-        "prefer": {
-          // return: "returns"
-        },
-        "requireReturn": false,
-        "requireReturnType": false,
-        "requireReturnDescription": false,
-        "requireParamDescription": false
-        // "matchDescription": "^[A-Z][A-Za-z0-9\\s]*[.]$"
-      }
-    ],
+    // // 使用有效的JSDoc注释
+    // "valid-jsdoc": [
+    //   "warn",
+    //   {
+    //     "prefer": {
+    //       // return: "returns"
+    //     },
+    //     "requireReturn": false,
+    //     "requireReturnType": false,
+    //     "requireReturnDescription": false,
+    //     "requireParamDescription": false
+    //     // "matchDescription": "^[A-Z][A-Za-z0-9\\s]*[.]$"
+    //   }
+    // ],
 
     // 保证`typeof`的结果是和有效的类型字符串进行比较
     "valid-typeof": 2,
@@ -786,14 +786,14 @@ module.exports = {
     // --fix
     "quotes": [2, "single", "avoid-escape"],
 
-    // 必须写JSDoc
-    "require-jsdoc": ["error", {
-      "require": {
-        "FunctionDeclaration": true,
-        "MethodDefinition": false,
-        "ClassDeclaration": false
-      }
-    }],
+    // // 必须写JSDoc
+    // "require-jsdoc": ["error", {
+    //   "require": {
+    //     // "FunctionDeclaration": true,
+    //     "MethodDefinition": false,
+    //     "ClassDeclaration": false
+    //   }
+    // }],
 
     // 当`;`出现在表达式中间时，统一在它的后面添加一个空格，前面不允许有空格
     // --fix
