@@ -26,7 +26,7 @@ module.exports = {
  * @returns {*}
  */
 function downloadImages(req, res, next) {
-  let urls = req.query.urls;
+  let urls = req.query.urls || req.body.urls;
 
   try {
     urls = JSON.parse(urls);
@@ -49,10 +49,19 @@ function downloadImages(req, res, next) {
  * @returns {*}
  */
 function ueditorDownloadImage(req, res, next) {
-  let urls = req.body['source[]'] || req.body.source || [];
+  // let urls = req.body['source[]'] || req.body.source || [];
+  //
+  // if (!Array.isArray(urls)) {
+  //   urls = [urls];
+  // }
+  const urls = req.body.urls;
 
   if (!Array.isArray(urls)) {
-    urls = [urls];
+    return res.json({state: 'FAILED', tip: '传入的参数不是数组', list: []});
+  }
+
+  if (urls.length === 0) {
+    return res.json({state: 'SUCCESS', list: []});
   }
 
   return downloadResult(urls, req, res, next);

@@ -19,9 +19,9 @@ module.exports = {
  *   <h3 class="title">上传测试</h3>
  *   <table>
  *     <tr>
- *       <td><input type="file" name="file"/></td>
- *       <td><input type="file" name="file"/></td>
- *       <td><input type="file" name="file"/></td>
+ *       <td><input type="file" name="upfile"/></td>
+ *       <td><input type="file" name="upfile"/></td>
+ *       <td><input type="file" name="upfile"/></td>
  *       <td><input type="submit"  value="上传"/></td>
  *      </tr>
  *    </table>
@@ -31,8 +31,8 @@ module.exports = {
  * @returns {Promise.<TResult>} 返回结果：
  * ```json
  * {
- * "code": 0,
- *    "mgs": [
+ * "code": 200,
+ *    "msg": [
  *        {
  *            "imageUrl": "http://127.0.0.1:20008",
  *            "url": "/images/ef/33/ef33b5203a47493d93afed6263ef1ea0-10225-320x240.jpeg",
@@ -62,7 +62,7 @@ module.exports = {
 function uploadFiles(req, res) {
   return image.handleImages(req.files)
     .then((imageInfos) => {
-      return res.json({code: 0, mgs: imageInfos});
+      return res.json({code: 200, msg: imageInfos});
     });
 }
 

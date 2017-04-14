@@ -39,7 +39,7 @@ const storage = multer.diskStorage({
 
 // const upload = multer({storage: storage}).single('file');
 
-const uploadImages = multer({storage: storage}).array('file');
+const uploadImages = multer({storage: storage}).array('upfile');
 
 exports.uploadFiles = uploadFiles;
 
