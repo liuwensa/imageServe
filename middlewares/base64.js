@@ -5,8 +5,8 @@
 'use strict';
 
 module.exports = {
-  base64Decode: base64Decode,
-  base64Encode: base64Encode
+  base64Decode,
+  base64Encode
 };
 
 /**

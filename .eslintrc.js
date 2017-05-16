@@ -35,7 +35,7 @@ module.exports = {
     "utils": true,
     "config": true,
     "fs": true,
-    "gm": true,
+    // "gm": true,
     "path": true,
     "logger": true
   },

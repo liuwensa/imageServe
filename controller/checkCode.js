@@ -7,7 +7,7 @@
 const Captchapng = require('captchapng');
 
 module.exports = {
-  acquireCheckCode: acquireCheckCode
+  acquireCheckCode
 };
 
 /**

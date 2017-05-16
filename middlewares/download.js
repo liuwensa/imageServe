@@ -12,9 +12,9 @@ const tmpDir = config.tmpDir;
 
 
 module.exports = {
-  replaceContent      : replaceContent,
-  ueditorDownloadImage: ueditorDownloadImage,
-  downloadImages      : downloadImages
+  replaceContent,
+  ueditorDownloadImage,
+  downloadImages
 };
 
 

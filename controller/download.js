@@ -7,9 +7,9 @@
 const image = require('../services/image');
 
 module.exports = {
-  replaceContent      : replaceContent,
-  ueditorDownloadImage: ueditorDownloadImage,
-  downloadImages      : downloadImages
+  replaceContent,
+  ueditorDownloadImage,
+  downloadImages
 };
 
 
@@ -67,7 +67,11 @@ function ueditorDownloadImage(req, res) {
     .then((imageInfos) => {
       const list = [];
       for (let i = 0, len = imageInfos.length; i < len; i++) {
-        list.push({url: `${imageInfos[i].imageUrl}${imageInfos[i].url}`, source: imageInfos[i].originUrl, state: 'SUCCESS'});
+        list.push({
+          url   : `${imageInfos[i].imageUrl}${imageInfos[i].url}`,
+          source: imageInfos[i].originUrl,
+          state : 'SUCCESS'
+        });
       }
       return res.json({state: 'SUCCESS', list: list});
     })

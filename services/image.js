@@ -4,12 +4,17 @@
 
 'use strict';
 
+const gm      = require('gm');
+
+Promise.promisifyAll(fs);
+Promise.promisifyAll(gm.prototype);
+
 const uploadDir = config.uploadDir;
 const imageUrl  = config.imageUrl;
 
 module.exports = {
-  saveAsFile  : saveAsFile,
-  handleImages: handleImages
+  saveAsFile,
+  handleImages
 };
 
 /**
@@ -20,10 +25,12 @@ module.exports = {
 function handleImages(files) {
   const imageInfos = [];
   return Promise.each(files, (file) => {
-    return saveAsFile(file).then((imageInfo) => {
-      imageInfos.push(imageInfo);
-    });
-  }).return(imageInfos);
+    return saveAsFile(file)
+      .then((imageInfo) => {
+        imageInfos.push(imageInfo);
+      });
+  })
+    .return(imageInfos);
 }
 
 /**

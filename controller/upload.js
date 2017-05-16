@@ -7,9 +7,9 @@
 const image = require('../services/image');
 
 module.exports = {
-  uploadFiles       : uploadFiles,
-  ueditorUploadFiles: ueditorUploadFiles,
-  uploadImageBase64 : uploadImageBase64
+  uploadFiles,
+  ueditorUploadFiles,
+  uploadImageBase64
 };
 
 /**
@@ -80,10 +80,11 @@ function uploadFiles(req, res) {
  * ```
  */
 function ueditorUploadFiles(req, res) {
-  return image.handleImages(req.files).then((imageInfos) => {
-    const imageInfo = imageInfos[0];
-    return res.json({url: imageInfo.imageUrl + imageInfo.url, title: '', original: '', state: 'SUCCESS'});
-  })
+  return image.handleImages(req.files)
+    .then((imageInfos) => {
+      const imageInfo = imageInfos[0];
+      return res.json({url: imageInfo.imageUrl + imageInfo.url, title: '', original: '', state: 'SUCCESS'});
+    })
     .catch((err) => {
       logger.error('百度编辑器上传图片出错：', err);
       return res.json({url: '', title: '', original: '', state: 'FAILED'});
@@ -114,7 +115,8 @@ function ueditorUploadFiles(req, res) {
  * ```
  */
 function uploadImageBase64(req, res) {
-  return image.handleImages(req.files).then((imageInfos) => {
-    return res.json({code: 0, mgs: imageInfos});
-  });
+  return image.handleImages(req.files)
+    .then((imageInfos) => {
+      return res.json({code: 0, mgs: imageInfos});
+    });
 }

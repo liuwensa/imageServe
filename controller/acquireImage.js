@@ -4,6 +4,10 @@
 
 'use strict';
 
+const gm = require('gm');
+
+Promise.promisifyAll(gm.prototype);
+
 const uploadDir = config.uploadDir;
 const picSizes  = config.picSizes;
 
@@ -11,7 +15,7 @@ const imgReg  = /(?:[_.](\d{2,6})x(\d{2,6})(?:Q(\d{1,3}))?(S|SM|ST|SB|SL|SR)?\.(
 const cropReg = /_crop_((_?\d{1,4}(?:\.\d)?){4})\.(?:jpg|jpeg|png|webp|gif)$/;
 
 module.exports = {
-  acquireImage: acquireImage
+  acquireImage
 };
 
 /**
