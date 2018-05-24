@@ -6,12 +6,10 @@
 
 const uuid      = require('node-uuid');
 const lodash    = require('lodash');
-const validator = require('validator');
 const cryptos   = require('crypto');
 
 module.exports = {
   uuid     : uuid,
-  validator: validator,
   _        : lodash,
 
   myuuid: function () {

@@ -6,7 +6,6 @@
 
 const cheerio        = require('cheerio');
 const Download       = require('download');
-const downloadStatus = require('download-status');
 
 const tmpDir = config.tmpDir;
 
@@ -110,28 +109,18 @@ function parseImgs(content) {
  * 下载图片到临时目录
  * @param urls
  */
-function downFiles(urls) {
+async function downFiles(urls) {
   const imageInfos = [];
-  return Promise.each(urls, (url) => {
-    url            = decodeURIComponent(url);
-    const fileName = utils.myuuid();
-    return new Promise((resolve, reject) => {
-      const downloader = new Download({extract: true, strip: 1});
-      downloader
-        .get(url)
-        .rename(fileName)
-        .dest(tmpDir)
-        .use(downloadStatus)
-        .run((err) => {
-          if (err) {
-            return reject(err);
-          }
-          const fullPath = path.join(tmpDir, fileName);
-          imageInfos.push({originUrl: url, name: fileName, path: fullPath});
-          return resolve();
-        });
-    });
-  }).return(imageInfos);
+
+  for (const url of urls) {
+    const filename = utils.myuuid();
+    await Download(url, tmpDir, {filename});
+
+    const fullPath = path.join(tmpDir, fileName);
+    imageInfos.push({originUrl: url, name: fileName, path: fullPath});
+  }
+
+  return imageInfos;
 }
 
 /**

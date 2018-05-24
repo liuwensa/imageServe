@@ -4,45 +4,53 @@
 
 'use strict';
 
-const logConfig = config.log;
+const logConf = config.log;
+
+const logFileDir = logConf.dir;
 
 // eslint-disable-next-line
-fs.mkdirsSync(path.join(logConfig.dir, 'main'));
+fs.mkdirsSync(path.join(logFileDir, 'main'));
 
 module.exports = {
-  level         : 'AUTO',
-  replaceConsole: true,
-  appenders     : [
-    {
+  appenders : {
+    console  : {
       type: 'console'
     },
-    {
-      category            : 'main',
+    main     : {
       type                : 'dateFile',
-      filename            : path.join(logConfig.dir, '/main/log'),
+      filename            : path.join(logFileDir, 'main/log-'),
       pattern             : 'yyyyMMdd',
       alwaysIncludePattern: true,
+      compress            : true,
       maxLogSize          : 1024 * 1024 * 30
     },
-    {
-      category: 'main',
-      type    : 'logLevelFilter',
-      level   : 'WARN',
-      appender: {
-        type      : 'file',
-        filename  : path.join(logConfig.dir, 'main.WARN'),
-        maxLogSize: 1024 * 1024 * 30
-      }
+    mainerror: {
+      type      : 'file',
+      filename  : path.join(logFileDir, 'error.log'),
+      compress  : true,
+      maxLogSize: 1024 * 1024 * 30
     },
-    {
-      category: 'main',
+    error    : {
       type    : 'logLevelFilter',
       level   : 'ERROR',
-      appender: {
-        type      : 'file',
-        filename  : path.join(logConfig.dir, 'main.ERROR'),
-        maxLogSize: 1024 * 1024 * 30
-      }
+      appender: 'mainerror'
+    },
+    mainwarn : {
+      type      : 'file',
+      filename  : path.join(logFileDir, 'warn.log'),
+      compress  : true,
+      maxLogSize: 1024 * 1024 * 30
+    },
+    warns    : {
+      type    : 'logLevelFilter',
+      level   : 'warn',
+      appender: 'mainwarn'
     }
-  ]
+  },
+  categories: {
+    default: {
+      appenders: ['console', 'main', 'error', 'warns'],
+      level    : 'all'
+    }
+  }
 };

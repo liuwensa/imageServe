@@ -10,10 +10,9 @@ const log4jsConfig = require('./log4jsConfig');
 
 log4js.configure(log4jsConfig);
 
-const mainLogger = log4js.getLogger('main');
+const loggermain = log4js.getLogger('main');
 
-mainLogger.setLevel('AUTO');
+loggermain.level  = 'auto';
+loggermain.log4js = log4js;
 
-mainLogger.log4js = log4js;
-
-module.exports = mainLogger;
+module.exports = loggermain;
