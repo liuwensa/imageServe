@@ -10,7 +10,7 @@ module.exports = {
 //   "parser": "esprima",
   "parserOptions": {
     // ecmaVersion - set to 3, 5 (default), 6, or 7 to specify the version of ECMAScript you want to use.
-    "ecmaVersion": 7,
+    "ecmaVersion": 8,
     // "sourceType": "module",
     "ecmaFeatures": {
       "jsx": true
@@ -35,7 +35,6 @@ module.exports = {
     "utils": true,
     "config": true,
     "fs": true,
-    // "gm": true,
     "path": true,
     "logger": true
   },

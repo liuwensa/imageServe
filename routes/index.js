@@ -27,7 +27,6 @@ router.post('/upload/images', multerUtil.uploadFiles, upload.uploadFiles);
 router.post('/upload/images/base64', base64.base64Decode, upload.uploadImageBase64);
 
 // 远程下载图片
-router.get('/download/images', downloadParser.downloadImages, download.downloadImages);
 router.post('/download/images', downloadParser.downloadImages, download.downloadImages);
 
 // 获取图片

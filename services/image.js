@@ -13,7 +13,6 @@ const uploadDir = config.uploadDir;
 const imageUrl  = config.imageUrl;
 
 module.exports = {
-  saveAsFile,
   handleImages
 };
 

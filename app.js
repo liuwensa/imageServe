@@ -11,7 +11,6 @@ const log4js       = require('log4js');
 const cookieParser = require('cookie-parser');
 const bodyParser   = require('body-parser');
 
-
 /* eslint-disable */
 fs.mkdirsSync(config.uploadDir);
 fs.mkdirsSync(config.thumbnailDir);

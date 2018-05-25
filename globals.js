@@ -9,9 +9,7 @@ global.ROOT_PATH = __dirname;
 global.Promise = require('bluebird');
 global.path    = require('path');
 global.fs      = require('fs-extra');
-
-global.config = require('config');
-
+global.config  = require('config');
 
 global.utils  = require('./utils');
 global.logger = require('./logger');

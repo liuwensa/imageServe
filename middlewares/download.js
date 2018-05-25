@@ -116,8 +116,8 @@ async function downFiles(urls) {
     const filename = utils.myuuid();
     await Download(url, tmpDir, {filename});
 
-    const fullPath = path.join(tmpDir, fileName);
-    imageInfos.push({originUrl: url, name: fileName, path: fullPath});
+    const fullPath = path.join(tmpDir, filename);
+    imageInfos.push({originUrl: url, name: filename, path: fullPath});
   }
 
   return imageInfos;
@@ -125,7 +125,7 @@ async function downFiles(urls) {
 
 /**
  * downloadResult
- * @param {Array} urls
+ * @param {Array|String} urls
  * @param {Object} req
  * @param {Object} res
  * @param {Function} next
