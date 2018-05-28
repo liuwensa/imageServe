@@ -27,6 +27,10 @@ module.exports = {
 function downloadImages(req, res, next) {
   let urls = req.query.urls || req.body.urls;
 
+  if (!urls) {
+    return res.json({code: 1, msg: 'urls不正确！'});
+  }
+
   try {
     urls = JSON.parse(urls);
   } catch (err) {
@@ -35,6 +39,10 @@ function downloadImages(req, res, next) {
 
   if (!Array.isArray(urls)) {
     urls = [urls];
+  }
+
+  if (urls.length === 0) {
+    return res.json({code: 1, msg: 'urls不正确！'});
   }
 
   return downloadResult(urls, req, res, next);
@@ -119,7 +127,6 @@ async function downFiles(urls) {
     const fullPath = path.join(tmpDir, filename);
     imageInfos.push({originUrl: url, name: filename, path: fullPath});
   }
-
   return imageInfos;
 }
 

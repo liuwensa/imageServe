@@ -19,76 +19,20 @@ module.exports = {
 };
 
 /**
- * 生成的图片后缀可以是：.jpg .jpeg .png .webp
- *
- * 图片路径格式：
- *
- * 约定：原图的路径中不使用下划线 \_ ，使用 - 分隔不同信息。
- * 附加信息使用 \_ 分割，如 _120x120Q100 ，或者是query参数（还未支持），如?w=120&h=120&q=100。
- *
- * 缩略图：
- * /images/a1/04/a104fcfd7dc738dbed6f4a175612e508.jpg_96x96.jpg
- * /images/a1/04/a104fcfd7dc738dbed6f4a175612e508.jpg_120x120.jpg
- * /images/a1/04/a104fcfd7dc738dbed6f4a175612e508.jpg_120x120Q0.jpg
- * /images/a1/04/a104fcfd7dc738dbed6f4a175612e508.jpg_120x120Q100.jpg
- *
- * 按尺寸和质量缩放
- *
- * /images/a1/04/a104fcfd7dc738dbed6f4a175612e508-879394-1024x768.jpg_120x120.jpg     质量不变，调低尺寸
- * /images/a1/04/a104fcfd7dc738dbed6f4a175612e508-879394-1024x768.jpg_120x120Q100.jpg 质量不变，调低尺寸
- * /images/a1/04/a104fcfd7dc738dbed6f4a175612e508-879394-1024x768.jpg_1024x768Q60.jpg 尺寸不变，调低质量
- *
- * 按尺寸和质量缩放并裁剪：
- *
- * /images/ce/de/cede6d6595afc1f1a45189e2dd04ed60-879394-1024x768.jpg_120x100SM.jpg 居中截取
- * /images/ce/de/cede6d6595afc1f1a45189e2dd04ed60-879394-1024x768.jpg_120x100ST.jpg 居上截取
- * /images/ce/de/cede6d6595afc1f1a45189e2dd04ed60-879394-1024x768.jpg_120x100SB.jpg 居下截取
- * /images/ce/de/cede6d6595afc1f1a45189e2dd04ed60-879394-1024x768.jpg_120x100SL.jpg 居左截取
- * /images/ce/de/cede6d6595afc1f1a45189e2dd04ed60-879394-1024x768.jpg_120x100SR.jpg 居右截取
- *
- * /images/ce/de/cede6d6595afc1f1a45189e2dd04ed60-879394-1024x768.jpg_120x100Q100SM.jpg 居中截取
- * /images/ce/de/cede6d6595afc1f1a45189e2dd04ed60-879394-1024x768.jpg_120x100Q100ST.jpg 居上截取
- * /images/ce/de/cede6d6595afc1f1a45189e2dd04ed60-879394-1024x768.jpg_120x100Q100SB.jpg 居下截取
- * /images/ce/de/cede6d6595afc1f1a45189e2dd04ed60-879394-1024x768.jpg_120x100Q100SL.jpg 居左截取
- * /images/ce/de/cede6d6595afc1f1a45189e2dd04ed60-879394-1024x768.jpg_120x100Q100SR.jpg 居右截取
- *
- * 居中截取 尺寸不变，质量降低:
- * /images/ce/de/cede6d6595afc1f1a45189e2dd04ed60-879394-1024x768.jpg_1024x768Q60SM.jpg
- *
- * 如果原图是水平方向，如全景图，在URL上使用ST、SB将不会起作用，那么截取的图片是 居中截取 的
- * 如果原图是垂直方向，如  长图，在URL上使用SL、SR将不会起作用，那么截取的图片是 居中截取 的
- *
- * 如果文件路径中包含大小和尺寸信息，后缀添加方式无变化。
- *
- * 由于旧的文件路径中不包含大小和尺寸信息，客户端又需要使用大小和尺寸信息，需要对旧的路径进行兼容。
- *
- * 图片质量：Q[0-100] 表示图片质量
- * 图片尺寸: 图片尺寸无限制，超过原图尺寸则安装原图尺寸缩放。
- *
- *
- * gif格式图片处理  NOTE：前端需要对后缀进行判断，服务端需保证图片后缀名无误。
- * 原图：/images/43/fe/43fe0a9a841deb9ff84b2b666fc28d5d.gif
- * 首帧：/images/43/fe/43fe0a9a841deb9ff84b2b666fc28d5d.gif[0].jpg
- *
- * 图片裁剪：
- *
- * 原图：/images/a1/04/a104fcfd7dc738dbed6f4a175612e508.jpg
- * 切图：/images/a1/04/a104fcfd7dc738dbed6f4a175612e508.jpg_crop_x_y_w_h.jpg
- * 切图：/images/a1/04/a104fcfd7dc738dbed6f4a175612e508.jpg_crop_200_200_1000_1000.jpg
- * 切图：/images/a1/04/a104fcfd7dc738dbed6f4a175612e508.jpg_crop_200.1_200.1_1000.4_1000.5.jpg
- *
- * @method 图片访问接口 /images/:firstFile/:secondFile/:filename - GET
+ * 图片访问接口 /images/:date/:firstFile/:secondFile/:filename - GET
+ * @param {String} req.params.date         - 日期 20180528
  * @param {String} req.params.firstFile    - 一级路径
  * @param {String} req.params.secondFile   - 二级路径
  * @param {String} req.params.filename     - 文件名称
- * @returns {*}
+ * @returns {Promise.<T>}
  */
 function acquireImage(req, res) {
+  const date       = req.params.date;
   const firstFile  = req.params.firstFile;
   const secondFile = req.params.secondFile;
   const filename   = req.params.filename;
 
-  const filePathName = path.join(uploadDir, firstFile, secondFile, filename);
+  const filePathName = path.join(uploadDir, date, firstFile, secondFile, filename);
 
   const thumbnailPath = filePathName.replace('images', 'thumbnails');
 
@@ -96,6 +40,7 @@ function acquireImage(req, res) {
 
   // 裁剪图片
   const cropRegMatch = filePathName.match(cropReg);
+
   if (cropRegMatch) {
     // eslint-disable-next-line
     if (fs.existsSync(thumbnailPath)) {

@@ -49,7 +49,9 @@ module.exports = {
  */
 function downloadImages(req, res) {
   return image.handleImages(req.files)
-    .then((imageInfos) => res.json({code: 0, msg: imageInfos}))
+    .then((imageInfos) => {
+      return res.json({code: 0, msg: imageInfos});
+    })
     .catch((err) => {
       logger.error(err);
       return res.json({code: 1, msg: err});

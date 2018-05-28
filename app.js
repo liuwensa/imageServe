@@ -12,6 +12,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser   = require('body-parser');
 
 /* eslint-disable */
+fs.mkdirsSync(config.tmpDir);
 fs.mkdirsSync(config.uploadDir);
 fs.mkdirsSync(config.thumbnailDir);
 /* eslint-enable */
@@ -21,11 +22,13 @@ const routes = require('./routes');
 const app = express();
 
 app.use(bodyParser.json({limit: '80mb'}));
-app.use(bodyParser.urlencoded({limit: '80mb', extended: false}));
+app.use(bodyParser.urlencoded({limit: '80mb', parameterLimit: 100000, extended: true}));
 app.use(cookieParser());
 
 app.use(log4js.connectLogger(logger, config.log));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(config.uploadDir, {maxAge: 1000 * 60 * 60}));
+app.use(express.static(config.thumbnailDir, {maxAge: 1000 * 60 * 60}));
 
 // 设置跨域访问
 app.use((req, res, next) => {

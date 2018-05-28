@@ -11,7 +11,7 @@ const filePath = 'E:\\raid\\imageServe';
 module.exports = {
   name        : packages.name,
   version     : packages.version,
-  port        : 20008,
+  port        : 6355,
   imageUrl    : 'http://127.0.0.1:20008',
   filePath    : filePath,
   tmpDir      : path.join(filePath, 'tmp'),
@@ -29,5 +29,6 @@ module.exports = {
     '120x120',
     '240x240',
     '480x480'
-  ]
+  ],
+  singKey: 'images'
 };

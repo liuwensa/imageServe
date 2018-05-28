@@ -4,10 +4,9 @@
 
 'use strict';
 
-const gm      = require('gm');
+const sharp = require('sharp');
 
 Promise.promisifyAll(fs);
-Promise.promisifyAll(gm.prototype);
 
 const uploadDir = config.uploadDir;
 const imageUrl  = config.imageUrl;
@@ -37,39 +36,38 @@ function handleImages(files) {
  * @param {Object} file
  * @returns {*}
  */
-function saveAsFile(file) {
-  return Promise.props({
-    statInfo: fs.statAsync(file.path),
-    imgInfo : gm(file.path).identifyAsync()
-  }).then((result) => {
-    const filename = file.name;
-    const format   = result.imgInfo.format;
-    const ext      = format.toLowerCase();
-    let geometry   = result.imgInfo.Geometry;
-    const fileSize = result.statInfo.size;
-    const size     = result.imgInfo.size;
+async function saveAsFile(file) {
+  const [statInfo, imgInfo] = await Promise.all([
+    fs.statAsync(file.path),
+    sharp(file.path).metadata()
+  ]);
 
-    const firstFile  = filename.substring(0, 2);
-    const secondFile = filename.substring(2, 4);
+  const filename = file.name;
+  const fileSize = statInfo.size;
+  const format   = imgInfo.format;
+  const width    = imgInfo.width;
+  const height   = imgInfo.height;
 
-    if (Array.isArray(geometry)) {
-      geometry = geometry[0];
-    }
+  const date       = new Date().Format('yyyyMMdd');
+  const firstFile  = filename.substring(0, 2);
+  const secondFile = filename.substring(2, 4);
 
-    const filePath = `/${firstFile}/${secondFile}/${filename}-${fileSize}-${geometry}.${ext}`;
+  const filePath = `/${date}/${firstFile}/${secondFile}/${filename}-${fileSize}-${width}x${height}.${format}`;
 
-    const newPath = path.join(uploadDir, filePath);
-    /* eslint-disable */
-    fs.mkdirsSync(path.dirname(newPath));
-    fs.renameSync(file.path, newPath);
-    /* eslint-enable */
-    return {
-      imageUrl : imageUrl,
-      url      : `/images${filePath}`,
-      fileSize : fileSize,
-      size     : size,
-      format   : format,
-      originUrl: file.originUrl || ''
-    };
-  });
+  const newPath = path.join(uploadDir, filePath);
+
+  /* eslint-disable */
+  fs.mkdirsSync(path.dirname(newPath));
+  fs.renameSync(file.path, newPath);
+  /* eslint-enable */
+
+  return {
+    imageUrl : imageUrl,
+    url      : `${imageUrl}/images${filePath}`,
+    shorturl : `/images${filePath}`,
+    fileSize : fileSize,
+    size     : {width, height},
+    format   : format,
+    originUrl: file.originUrl || ''
+  };
 }
